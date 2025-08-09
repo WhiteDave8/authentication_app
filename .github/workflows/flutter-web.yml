@@ -1,0 +1,24 @@
+name: Build & Deploy Flutter Web
+on:
+  push:
+    branches: [ main ]
+permissions:
+  contents: write
+concurrency:
+  group: "flutter-web-deploy"
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter pub get
+      - run: flutter build web --release --web-renderer canvaskit
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          force_orphan: true
